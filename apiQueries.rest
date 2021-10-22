@@ -1,0 +1,89 @@
+
+### Login
+
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "user": {
+    "email": "senivaser@gmail.com",
+    "password": "12345"
+  }
+}
+
+### Register
+
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "user": {
+    "email": "senivaser@gmail.com",
+    "password": "12345"
+  }
+}
+
+
+### Create Article
+POST http://localhost:3000/api/article/new
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNzEzY2Q1YjdlMTNmZGM4OTY0ZTE3YyIsInVzZXJuYW1lIjoic2VuaXZhc2VyIiwiZXhwIjoxNjQwMDMwNTMyLjQyNywiaWF0IjoxNjM0ODQ2NTMyfQ.YC8joiY1aRfuV9rl2IMGyeCFm01ceXKRejW18DRsNzw
+
+----WebKitFormBoundary
+Content-Disposition: form-data; name="text"
+Content-Type: text/plain
+asd
+----WebKitFormBoundary
+
+### Get Article
+GET http://localhost:3000/api/article/7048fa30-32ab-11ec-8047-d130a1878817
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNzEzY2Q1YjdlMTNmZGM4OTY0ZTE3YyIsInVzZXJuYW1lIjoic2VuaXZhc2VyIiwiZXhwIjoxNjQwMDMwNTMyLjQyNywiaWF0IjoxNjM0ODQ2NTMyfQ.YC8joiY1aRfuV9rl2IMGyeCFm01ceXKRejW18DRsNzw
+
+
+### Delete Article
+DELETE http://localhost:3000/api/article/:id
+Content-Type: application/json
+Authorization: Bearer JWT
+
+<!-- Response {
+  auid: string,
+
+-->
+
+### Edit Text
+POST http://localhost:3000/api/article/:id/text
+Content-Type: multipart/form-data
+Authorization: Bearer JWT
+
+<!-- Response {
+  auid: string,
+  
+-->
+
+### Add Media File
+POST http://localhost:3000/api/article/:id/media
+Content-Type: multipart/form-data
+Authorization: Bearer JWT
+
+<!-- Response {
+  auid: string,
+  
+-->
+
+### Remove Media File
+DELETE http://localhost:3000/api/article/:id/media/:id
+Content-Type: multipart/form-data
+Authorization: Bearer JWT
+
+<!-- Response {
+  auid: string,
+  
+-->
+
+###Get array of articles info
+GET http://localhost:3000/api/article/all?page=1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNzEzY2Q1YjdlMTNmZGM4OTY0ZTE3YyIsInVzZXJuYW1lIjoic2VuaXZhc2VyIiwiZXhwIjoxNjQwMDMwNTMyLjQyNywiaWF0IjoxNjM0ODQ2NTMyfQ.YC8joiY1aRfuV9rl2IMGyeCFm01ceXKRejW18DRsNzw
+
+
