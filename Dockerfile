@@ -1,19 +1,11 @@
-# Base image
-FROM node:8.5.0
-
-## Create app directory
-RUN mkdir -p /usr/src/app
+FROM node:14-alpine
+ENV NODE_ENV=production
 WORKDIR /usr/src/app
-
-## Install app dependencies
-COPY package.json /usr/src/app/
-RUN npm install
-
-# Bundle app source
-COPY . /usr/src/app
-
-## tell the port number the container should expose
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+RUN npm install --production --silent && mv node_modules ../
+RUN npm run recovery
+COPY . .
 EXPOSE 3000
-
-## run the application
-CMD ["npm", "run", "dev"]
+RUN chown -R node /usr/src/app
+USER node
+CMD ["npm", "run", "serve"]

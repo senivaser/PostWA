@@ -1,5 +1,4 @@
 import { Request } from 'express';
-import { ConsoleTransportOptions } from 'winston/lib/winston/transports';
 const jwt = require('express-jwt');
 import { JWT_SECRET } from "./secrets";
 

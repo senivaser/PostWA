@@ -3,7 +3,6 @@ import { IUser } from '../../interfaces/user-interface';
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
 import { JWT_SECRET } from "../../utilities/secrets";
-import mongooseUniqueValidator from "mongoose-unique-validator"
 
 
 export default interface IUserModel extends IUser, Document {
@@ -86,9 +85,7 @@ UserSchema.methods.toAuthJSON = function (): any {
 };
 
 UserSchema.methods.toProfileJSONFor = function () {
-  return {
-    username: this.username,
-  };
+  return this.username
 };
 
 export const User: Model<IUserModel> = model<IUserModel>('User', UserSchema);

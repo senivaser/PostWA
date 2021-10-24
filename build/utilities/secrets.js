@@ -19,17 +19,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DB = exports.SESSION_SECRET = exports.JWT_SECRET = exports.LOG_DIRECTORY = exports.APP_PORT = exports.IS_PRODUCTION = exports.ENVIRONMENT = void 0;
+exports.DB = exports.JWT_SECRET = exports.LOG_DIRECTORY = exports.APP_PORT = exports.IS_PRODUCTION = exports.ENVIRONMENT = exports.DEST = void 0;
 const dotenv = __importStar(require("dotenv"));
 const _ = __importStar(require("lodash"));
 const path = __importStar(require("path"));
 dotenv.config({ path: ".env" });
+exports.DEST = _.defaultTo(process.env.DEST, "./uploads");
 exports.ENVIRONMENT = _.defaultTo(process.env.APP_ENV, "dev");
 exports.IS_PRODUCTION = exports.ENVIRONMENT === "production";
 exports.APP_PORT = _.defaultTo(parseInt(process.env.APP_PORT), 3000);
 exports.LOG_DIRECTORY = _.defaultTo(process.env.LOG_DIRECTORY, path.resolve('logs'));
 exports.JWT_SECRET = _.defaultTo(process.env.JWT_SECRET, "secret");
-exports.SESSION_SECRET = _.defaultTo(process.env.SESSION_SECRET, "secret");
 exports.DB = {
     USER: _.defaultTo(process.env.DB_USER, "root"),
     PASSWORD: _.defaultTo(process.env.DB_USER_PWD, "secret"),

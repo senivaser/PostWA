@@ -11,7 +11,7 @@
     "watch-node": "nodemon -r dotenv/config build/server.js",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
-    "test": "newman run ./tests/api-tests.postman.json -e ./tests/env-api-tests.postman.json"
+    "recovery": "mongoimport --jsonArray mongodb://localhost:27018/PostWA recovery/mongo-collections/users.json && mongoimport --jsonArray mongodb://localhost:27018/PostWA recovery/mongo-collections/articles.json && rm -r uploads && cp -R recovery/uploads uploads "
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,8 @@
     "@types/node": "14.0.22",
     "@types/passport": "^1.0.4",
     "@types/passport-local": "^1.0.33",
+    "@types/swagger-jsdoc": "^6.0.1",
+    "@types/swagger-ui-express": "^4.1.3",
     "@types/uuid": "^8.3.1",
     "newman": "^3.8.2",
     "nodemon": "2.0.4",
@@ -66,6 +68,8 @@
     "require": "^2.4.20",
     "require_optional": "^1.0.1",
     "slugify": "^1.4.4",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6",
     "uuid": "^3.3.2",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0"

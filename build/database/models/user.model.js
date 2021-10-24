@@ -87,9 +87,7 @@ UserSchema.methods.toAuthJSON = function () {
     };
 };
 UserSchema.methods.toProfileJSONFor = function () {
-    return {
-        username: this.username,
-    };
+    return this.username;
 };
 exports.User = mongoose_1.model('User', UserSchema);
 //# sourceMappingURL=user.model.js.map

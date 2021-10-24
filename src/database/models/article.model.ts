@@ -14,6 +14,7 @@ export default interface IArticleModel extends IArticle, Document {
 const ArticleSchema = new Schema<any>({
   uuid: {
     type: Schema.Types.String,
+    unique: true
   },
   text: {
     type: Schema.Types.String
@@ -29,12 +30,20 @@ const ArticleSchema = new Schema<any>({
   timestamps: true
 });
 
-ArticleSchema.pre('save', function (next) {
+ArticleSchema.pre('save', function (next: any) {
   if (!this.uuid) {
     this.uuid = uuid.v4();
   }
-  next();
+  next()
 })
+
+ArticleSchema.post('save', function (error: any, doc: any, next: any) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error('Article uuid is not unique'));
+  } else {
+    next(error);
+  }
+});
 
 ArticleSchema.methods.attachMedia = function (filename: string) {
   const media = [...this.media]

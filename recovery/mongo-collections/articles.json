@@ -1,0 +1,95 @@
+[{
+  "_id": {
+    "$oid": "617429cbd5ea320a6c4bd632"
+  },
+  "media": [
+    "1635002827515-kidswithanimals02_1.jpg"
+  ],
+  "text": "Первая заметка от senivaser3",
+  "author": {
+    "$oid": "61742961d5ea320a6c4bd62f"
+  },
+  "createdAt": {
+    "$date": "2021-10-23T15:27:07.797Z"
+  },
+  "updatedAt": {
+    "$date": "2021-10-23T15:27:07.797Z"
+  },
+  "uuid": "61e0474a-2ec2-44ca-a053-5b75c5b85269",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "617429f2d5ea320a6c4bd635"
+  },
+  "media": [
+    "1635002866544-kidswithanimals02_1.jpg",
+    "1635002882535-2110.jpg"
+  ],
+  "text": "Вторая заметка от senivaser3",
+  "author": {
+    "$oid": "61742961d5ea320a6c4bd62f"
+  },
+  "createdAt": {
+    "$date": "2021-10-23T15:27:46.604Z"
+  },
+  "updatedAt": {
+    "$date": "2021-10-23T15:28:02.624Z"
+  },
+  "uuid": "d3de6dce-ee7e-48ae-b206-85ed65002840",
+  "__v": 1
+},{
+  "_id": {
+    "$oid": "61742f806d781d1d7fbaa179"
+  },
+  "media": [
+    "1635004287845-giphy.gif"
+  ],
+  "text": "Гифка1",
+  "author": {
+    "$oid": "61713cd5b7e13fdc8964e17c"
+  },
+  "createdAt": {
+    "$date": "2021-10-23T15:51:28.015Z"
+  },
+  "updatedAt": {
+    "$date": "2021-10-23T15:51:28.015Z"
+  },
+  "uuid": "d724dd44-30f3-448f-a993-a82c774ffa82",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61742fa16d781d1d7fbaa17c"
+  },
+  "media": [
+    "1635004321762-fa9e27a7534060df383ab54354fcead3_w200.gif"
+  ],
+  "text": "Гифка2",
+  "author": {
+    "$oid": "61713cd5b7e13fdc8964e17c"
+  },
+  "createdAt": {
+    "$date": "2021-10-23T15:52:01.866Z"
+  },
+  "updatedAt": {
+    "$date": "2021-10-23T15:52:01.866Z"
+  },
+  "uuid": "e19daea8-c737-417f-8b96-703c3cc8db72",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "617432b16d781d1d7fbaa184"
+  },
+  "media": [],
+  "text": "На этот раз без контента :(",
+  "author": {
+    "$oid": "6172d53e1a0ebd817fd13d98"
+  },
+  "createdAt": {
+    "$date": "2021-10-23T16:05:05.697Z"
+  },
+  "updatedAt": {
+    "$date": "2021-10-23T16:05:05.697Z"
+  },
+  "uuid": "afce19e5-506b-4ae1-b9e9-dd455439b2d2",
+  "__v": 0
+}]

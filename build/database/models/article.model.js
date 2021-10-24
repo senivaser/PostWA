@@ -9,6 +9,7 @@ const uuid_1 = __importDefault(require("uuid"));
 const ArticleSchema = new mongoose_1.Schema({
     uuid: {
         type: mongoose_1.Schema.Types.String,
+        unique: true
     },
     text: {
         type: mongoose_1.Schema.Types.String
@@ -28,6 +29,14 @@ ArticleSchema.pre('save', function (next) {
         this.uuid = uuid_1.default.v4();
     }
     next();
+});
+ArticleSchema.post('save', function (error, doc, next) {
+    if (error.name === 'MongoError' && error.code === 11000) {
+        next(new Error('Article uuid is not unique'));
+    }
+    else {
+        next(error);
+    }
 });
 ArticleSchema.methods.attachMedia = function (filename) {
     const media = [...this.media];

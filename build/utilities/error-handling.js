@@ -7,7 +7,6 @@ exports.loadErrorHandlers = void 0;
 const secrets_1 = require("./secrets");
 const logger_1 = __importDefault(require("./logger"));
 function loadErrorHandlers(app) {
-    // catch 404 errors and forward to error handler
     app.use((req, res, next) => {
         const err = new Error('Not Found');
         err.status = 404;

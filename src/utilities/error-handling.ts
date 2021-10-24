@@ -4,7 +4,6 @@ import logger from "./logger";
 
 export function loadErrorHandlers(app: Application) {
 
-  // catch 404 errors and forward to error handler
   app.use((req, res, next) => {
 
     interface BetterError extends Error {
@@ -12,7 +11,7 @@ export function loadErrorHandlers(app: Application) {
     }
 
     const err: BetterError = new Error('Not Found');
-    err.status             = 404;
+    err.status = 404;
     next(err);
   });
 
@@ -33,7 +32,7 @@ export function loadErrorHandlers(app: Application) {
     res.json({
       errors: {
         message: err.message,
-        error  : !IS_PRODUCTION ? err : {}
+        error: !IS_PRODUCTION ? err : {}
       }
     });
   });

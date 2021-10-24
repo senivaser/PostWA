@@ -2,24 +2,42 @@ import { Request, Response, Router } from 'express';
 import { authentication } from '../utilities/authentication';
 import IUserModel, { User } from '../database/models/user.model';
 import IArticleModel, { Article } from "../database/models/article.model";
-import multer from 'multer';
 import fs from 'fs'
-
-const dest = './uploads'
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, dest)
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`)
-  }
-})
-
-const upload = multer({ storage: storage })
+import { dest, upload } from '../utilities/fileUploading'
 
 const router: Router = Router();
-
+/**
+ * @swagger
+ * /api/article/new:
+ *   post:
+ *     summary: Создание новой заметки
+ *     security:
+ *       - bearerAuth: [] 
+ *     tags: [Article]
+ *     description: Создает информацию о новой заметке в базе данных. 
+ *      Может содержать в теле запроса текс заметки, либо приложенные к заметке медиа-файлы. Можно до 10 раз использовать параметр media, для добавления файлов.
+ *      
+ *      Требуется авторизация
+ *     requestBody: 
+ *       required: true
+ *       content: 
+ *        multipart/form-data:
+ *          schema:
+ *            $ref: '#/components/schemas/ArticleNew'
+ *     responses:
+ *      '200':
+ *        description: Удачная публикация заметки. Ответ содержит информацию об опубликованной заметке.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ArticleResponse'
+ *      '401':
+ *        description: Ошибка аутентификации
+ *      '422':
+ *        description: Ошибка заполнения формы
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
+ */
 router.post('/new', upload.array('media', 10), authentication.required, (req: Request, res: Response, next) => {
 
 
@@ -27,7 +45,7 @@ router.post('/new', upload.array('media', 10), authentication.required, (req: Re
   const filenames: string[] = (req.files as Express.Multer.File[]).map((file: Express.Multer.File) => file.filename)
 
   if (!text) {
-    return res.status(401).send({ errors: { message: "Can't be blank" } });
+    return res.status(422).send({ errors: { text: "Can't be blank" } });
   }
 
   User
@@ -50,7 +68,32 @@ router.post('/new', upload.array('media', 10), authentication.required, (req: Re
     .catch(next)
 })
 
-
+/**
+ * @swagger
+ * /api/article/feed:
+ *   get:
+ *     summary: Отображение информации обо всех текущих заметках
+ *     tags: [Article]
+ *     description: Выводит все текущие заметки с пагинацией (20 заметок на странице)
+ *      Параметр page в запросе определяет номер страницы
+ *     parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *        description: Номер страницы
+ *     responses:
+ *      '200':
+ *        description: Запрос успешен
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ArticleResponseFeed'
+ *      '401':
+ *        description: Ошибка аутентификации
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
+ */
 router.get('/feed', authentication.optional, (req: Request, res: Response, next) => {
   let page: number = 1
   const queryPage: any = req.query.page || null
@@ -68,9 +111,35 @@ router.get('/feed', authentication.optional, (req: Request, res: Response, next)
     .catch(next)
 })
 
-router.get('/:auid', authentication.optional, (req: Request, res: Response, next) => {
+/**
+ * @swagger
+ * /api/article/id/{uuid}:
+ *   get:
+ *     summary: Информация о данной заметке
+ *     tags: [Article]
+ *     description: Адрес запроса содержит uuid заметки. 
+ *        Ответ на запрос содержит полную информацию о заметке, включая список файлов
+ *     parameters:
+ *      - in: path
+ *        name: uuid
+ *        schema:
+ *          type: string
+ *        description: Идентификатор заметки
+ *     responses:
+ *      '200':
+ *        description: Заметка найдена. Ответ содержит информацию об искомой заметке.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ArticleResponse'
+ *      '401':
+ *        description: Ошибка аутентификации
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
+ */
+router.get('/id/:uuid', authentication.optional, (req: Request, res: Response, next) => {
   Article
-    .findOne({ uuid: req.params.auid })
+    .findOne({ uuid: req.params.uuid })
     .populate('author')
     .then((article: IArticleModel) => {
       if (!article) {
@@ -82,7 +151,37 @@ router.get('/:auid', authentication.optional, (req: Request, res: Response, next
     .catch(next)
 })
 
-router.delete('/:auid', authentication.required, (req: Request, res: Response, next) => {
+/**
+ * @swagger
+ * /api/article/id/{uuid}:
+ *   delete:
+ *     summary: Удаляет указанную заметку
+ *     security:
+ *       - bearerAuth: [] 
+ *     tags: [Article]
+ *     description: Адрес запроса содержит uuid заметки, которую необходимо удалить. 
+ *        Ответ на запрос содержит сообщение о статусе удаления.
+ *     parameters:
+ *      - in: path
+ *        name: uuid
+ *        schema:
+ *          type: string
+ *        description: Идентификатор заметки
+ *     responses:
+ *      '200':
+ *        description: Заметка удалена успешно. Тело ответа на запрос содержит сообщение об удачном удалении.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ArticleActionResponse'
+ *      '401':
+ *        description: Ошибка аутентификации
+ *      '403':
+ *        description: Недостаточно прав для выполнения операции
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
+ */
+router.delete('/id/:uuid', authentication.required, (req: Request, res: Response, next) => {
 
   User
     .findById(req.payload.id)
@@ -91,20 +190,63 @@ router.delete('/:auid', authentication.required, (req: Request, res: Response, n
         return res.status(401).send({ errors: { message: "Authentication error" } });
       }
       Article
-        .deleteOne({ uuid: req.params.auid })
-        .then(() => {
-          return res.json({ auid: req.params.auid, message: "Deletition Succeed" })
+        .findOne({ uuid: req.params.uuid })
+        .then((article: IArticleModel) => {
+          if (`${article.author}` !== `${user._id}`) {
+            return res.status(403).send({ errors: { message: "Insufficient rights for this operation" } });
+          }
+          const media = [...article.media]
+          media.forEach((filename: string) => fs.unlinkSync(`${dest}/${filename}`))
+          article.remove();
+          return res.json({ uuid: req.params.uuid, message: "Deletition Succeed" })
         })
-        .catch(next)
     })
     .catch(next)
 
 
 })
 
-router.post('/:auid/text', authentication.required, (req: Request, res: Response, next) => {
+
+/**
+ * @swagger
+ * /api/article/id/{uuid}/text:
+ *   post:
+ *     summary: Изменение текста заметки
+ *     security:
+ *       - bearerAuth: [] 
+ *     tags: [Article]
+ *     description: Изменяет текст в данной заметке на переданный в теле запроса
+ *        Ответ на запрос содержит сообщение о статусе изменения текста.
+ *     parameters:
+ *      - in: path
+ *        name: uuid
+ *        schema:
+ *          type: string
+ *        description: Идентификатор заметки
+ *     requestBody: 
+ *       required: true
+ *       content: 
+ *        multipart/form-data:
+ *          schema:
+ *            $ref: '#/components/schemas/ArticleTextUpdate'         
+ *     responses:
+ *      '200':
+ *        description: Текст заметки успешно изменен. Тело ответа на запрос содержит сообщение об удачном удалении.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ArticleActionResponse'
+ *      '401':
+ *        description: Ошибка аутентификации
+ *      '403':
+ *        description: Недостаточно прав для выполнения операции
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
+ */
+router.post('/id/:uuid/text', upload.none(), authentication.required, (req: Request, res: Response, next) => {
   const text: string = req.body.text
-  if (!text.length) {
+  console.log(req.body)
+  if (!text || !text.length) {
     res.status(401).send({ errors: { text: "Can't be blank" } })
   }
   User
@@ -114,21 +256,64 @@ router.post('/:auid/text', authentication.required, (req: Request, res: Response
         return res.status(401).send({ errors: { message: "Authentication error" } });
       }
       Article
-        .findOne({ uuid: req.params.auid })
+        .findOne({ uuid: req.params.uuid })
         .then((article: IArticleModel) => {
+          if (`${article.author}` !== `${user._id}`) {
+            return res.status(403).send({ errors: { message: "Insufficient rights for this operation" } });
+          }
           if (!article) {
             return res.status(404).send({ errors: { message: "Article is not found" } });
           }
 
           article.text = req.body.text;
-          return res.json({ auid: req.params.auid, message: "Deletition Succeed" })
+          article.save();
+          return res.json({ uuid: req.params.uuid, message: "Text has been successfully changed" })
         })
         .catch(next)
     })
     .catch(next)
 })
 
-router.post('/:auid/media', authentication.required, upload.single('media'), (req: Request, res: Response, next) => {
+
+/**
+ * @swagger
+ * /api/article/id/{uuid}/media:
+ *   post:
+ *     summary: Прикрепление медиа файла
+ *     security:
+ *       - bearerAuth: [] 
+ *     tags: [Article]
+ *     description: Прикрепляет медиа файл из формы к заметке в базе данных, а так же дает к нему доступ в хранилище по имени файла.
+ *        Ответ на запрос содержит сообщение о статусе выполнения операции прикрепления.
+ * 
+ *        Предполагается, что медиа файлы будут прикрепляться в интерактивном окне через "+"
+ *     parameters:
+ *      - in: path
+ *        name: uuid
+ *        schema:
+ *          type: string
+ *        description: Идентификатор заметки
+ *     requestBody: 
+ *       required: true
+ *       content: 
+ *        multipart/form-data:
+ *          schema:
+ *            $ref: '#/components/schemas/ArticleMediaUpdate'         
+ *     responses:
+ *      '200':
+ *        description: Текст заметки успешно изменен. Тело ответа на запрос содержит сообщение об удачном удалении.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ArticleActionResponse'
+ *      '401':
+ *        description: Ошибка аутентификации
+ *      '403':
+ *        description: Недостаточно прав для выполнения операции
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
+ */
+router.post('/id/:uuid/media', authentication.required, upload.single('media'), (req: Request, res: Response, next) => {
 
   const filename = req.file.filename
 
@@ -139,7 +324,7 @@ router.post('/:auid/media', authentication.required, upload.single('media'), (re
         return res.status(401).send({ errors: { message: "Authentication error" } });
       }
       Article
-        .findOne({ uuid: req.params.auid })
+        .findOne({ uuid: req.params.uuid })
         .then((article: IArticleModel) => {
           if (!article) {
             return res.status(404).send({ errors: { message: "Article is not found" } });
@@ -147,14 +332,51 @@ router.post('/:auid/media', authentication.required, upload.single('media'), (re
 
           const result = article.attachMedia(filename)
           article.save();
-          return res.json({ auid: req.params.auid, filename: filename, message: result })
+          return res.json({ uuid: req.params.uuid, filename: filename, message: result })
         })
         .catch(next)
     })
     .catch(next)
 })
 
-router.delete('/:auid/media/:filename', authentication.required, (req: Request, res: Response, next) => {
+/**
+ * @swagger
+ * /api/article/id/{uuid}/media/{filename}:
+ *   delete:
+ *     summary: Удаление медиа файла
+ *     security:
+ *       - bearerAuth: [] 
+ *     tags: [Article]
+ *     description: Открепляет медиа файл от заметки в базе данных, а так же удаляет из хранилища
+ *        Ответ на запрос содержит сообщение о статусе выполнения операции прикрепления.
+ * 
+ *        Предполагается, что медиа файлы будут удаляться в интерактивном окне через "х"
+ *     parameters:
+ *      - in: path
+ *        name: uuid
+ *        schema:
+ *          type: string
+ *        description: Идентификатор заметки
+ *      - in: path
+ *        name: filename
+ *        schema:
+ *          type: string
+ *        description: Название удаляемого файла  
+ *     responses:
+ *      '200':
+ *        description: Текст заметки успешно изменен. Тело ответа на запрос содержит сообщение об удачном удалении.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ArticleActionResponse'
+ *      '401':
+ *        description: Ошибка аутентификации
+ *      '403':
+ *        description: Недостаточно прав для выполнения операции
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
+ */
+router.delete('/id/:uuid/media/:filename', authentication.required, (req: Request, res: Response, next) => {
   const filename = req.params.filename
 
   User
@@ -164,7 +386,7 @@ router.delete('/:auid/media/:filename', authentication.required, (req: Request, 
         return res.status(401).send({ errors: { message: "Authentication error" } });
       }
       Article
-        .findOne({ uuid: req.params.auid })
+        .findOne({ uuid: req.params.uuid })
         .then((article: IArticleModel) => {
           if (!article) {
             return res.status(404).send({ errors: { message: "Article is not found" } });
@@ -174,14 +396,14 @@ router.delete('/:auid/media/:filename', authentication.required, (req: Request, 
           if (result.message === "Media deletition succeed") {
             fs.unlink(`${dest}/${filename}`, (err: NodeJS.ErrnoException) => {
               if (err) {
-                return res.status(500).json({ auid: req.params.auid, filename: filename, message: "Media deletition Internal Error" })
+                return res.status(500).json({ uuid: req.params.uuid, filename: filename, message: "Media deletition Internal Error" })
               } else {
                 article.save();
-                return res.json({ auid: req.params.auid, filename: filename, message: result })
+                return res.json({ uuid: req.params.uuid, filename: filename, message: result })
               }
             })
           } else {
-            return res.status(404).json({ auid: req.params.auid, filename: filename, message: result })
+            return res.status(404).json({ uuid: req.params.uuid, filename: filename, message: result })
           }
 
         })
