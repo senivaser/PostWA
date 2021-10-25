@@ -40,6 +40,8 @@ const router = express_1.Router();
  *        description: Ошибка аутентификации
  *      '422':
  *        description: Ошибка заполнения формы
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
  */
 router.post('/new', fileUploading_1.upload.array('media', 10), authentication_1.authentication.required, (req, res, next) => {
     const text = req.body.text;
@@ -87,6 +89,8 @@ router.post('/new', fileUploading_1.upload.array('media', 10), authentication_1.
  *              $ref: '#/components/schemas/ArticleResponseFeed'
  *      '401':
  *        description: Ошибка аутентификации
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
  */
 router.get('/feed', authentication_1.authentication.optional, (req, res, next) => {
     let page = 1;
@@ -127,6 +131,8 @@ router.get('/feed', authentication_1.authentication.optional, (req, res, next) =
  *              $ref: '#/components/schemas/ArticleResponse'
  *      '401':
  *        description: Ошибка аутентификации
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
  */
 router.get('/id/:uuid', authentication_1.authentication.optional, (req, res, next) => {
     article_model_1.Article
@@ -167,6 +173,8 @@ router.get('/id/:uuid', authentication_1.authentication.optional, (req, res, nex
  *        description: Ошибка аутентификации
  *      '403':
  *        description: Недостаточно прав для выполнения операции
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
  */
 router.delete('/id/:uuid', authentication_1.authentication.required, (req, res, next) => {
     user_model_1.User
@@ -222,6 +230,8 @@ router.delete('/id/:uuid', authentication_1.authentication.required, (req, res, 
  *        description: Ошибка аутентификации
  *      '403':
  *        description: Недостаточно прав для выполнения операции
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
  */
 router.post('/id/:uuid/text', fileUploading_1.upload.none(), authentication_1.authentication.required, (req, res, next) => {
     const text = req.body.text;
@@ -287,6 +297,8 @@ router.post('/id/:uuid/text', fileUploading_1.upload.none(), authentication_1.au
  *        description: Ошибка аутентификации
  *      '403':
  *        description: Недостаточно прав для выполнения операции
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
  */
 router.post('/id/:uuid/media', authentication_1.authentication.required, fileUploading_1.upload.single('media'), (req, res, next) => {
     const filename = req.file.filename;
@@ -344,6 +356,8 @@ router.post('/id/:uuid/media', authentication_1.authentication.required, fileUpl
  *        description: Ошибка аутентификации
  *      '403':
  *        description: Недостаточно прав для выполнения операции
+ *      '500':
+ *        descpription: Внутренняя ошибка сервера
  */
 router.delete('/id/:uuid/media/:filename', authentication_1.authentication.required, (req, res, next) => {
     const filename = req.params.filename;

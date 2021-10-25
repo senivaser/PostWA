@@ -10,8 +10,14 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: "http://194.67.108.25:3000",
+        name: "Deployment Server"
       },
+      {
+        url: "http://localhost:3000",
+        name: "Local Server"
+      },
+
     ],
   },
   apis: ["./src/routes/*.ts"],
