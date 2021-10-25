@@ -11,7 +11,7 @@
     "watch-node": "nodemon -r dotenv/config build/server.js",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
-    "recovery": "mongoimport --jsonArray mongodb://localhost:27018/PostWA recovery/mongo-collections/users.json && mongoimport --jsonArray mongodb://localhost:27018/PostWA recovery/mongo-collections/articles.json && rm -r uploads && cp -R recovery/uploads uploads "
+    "recovery": "mongoimport --jsonArray mongodb://localhost:27017/PostWA recovery/mongo-collections/users.json && mongoimport --jsonArray mongodb://localhost:27017/PostWA recovery/mongo-collections/articles.json && rm -r uploads && cp -R recovery/uploads uploads "
   },
   "repository": {
     "type": "git",
